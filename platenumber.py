@@ -83,7 +83,6 @@ def findPlateNumberRegion(img):
 
 
 def detect(img):
-
     # 转化成灰度图
     gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 
@@ -117,7 +116,6 @@ def detect(img):
 
     # 带轮廓的图片
     cv.imwrite('contours.png', img)
-
 
 
 if __name__ == '__main__':
