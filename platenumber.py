@@ -1,45 +1,29 @@
-import math
-
 import cv2 as cv
 import numpy as np
+from aip import AipOcr
 
-# 读取图片
-img_path = '.jpg'
 
-for k in range(1, 8):
-    img = cv.imread(str(k) + img_path)
-    # cv.namedWindow('Original image' + str(k), cv.WINDOW_NORMAL)
-    # cv.imshow('Original image' + str(k), img)
+def get_plate_number(img_path):
+    img = cv.imread(img_path)
 
-    # set blue thresh
+    # 通过hsl找蓝色
     lower_blue = np.array([0, 20, 200])
     upper_blue = np.array([150, 150, 255])
-
-    # 转化成灰度图
     hsl = cv.cvtColor(img, cv.COLOR_BGR2HLS)
     mark = cv.inRange(hsl, lower_blue, upper_blue)
 
     # 形态学变换
-    gaussian = cv.GaussianBlur(mark, (3, 3), 0, 0, cv.BORDER_DEFAULT)
+    gaussian = cv.GaussianBlur(mark, (3, 3), 0, 0, cv.BORDER_DEFAULT)  # 高斯模糊
+    median = cv.medianBlur(gaussian, 5)  # 中值滤波
+    ret, binary = cv.threshold(median, 170, 255, cv.THRESH_BINARY)  # 二值化
 
-    # 中值滤波
-    median = cv.medianBlur(gaussian, 5)
-
-    # 二值化
-    ret, binary = cv.threshold(median, 170, 255, cv.THRESH_BINARY)
-
-    # 膨胀和腐蚀操作的核函数
+    # 做膨胀与腐蚀操作
     element1 = cv.getStructuringElement(cv.MORPH_RECT, (9, 1))
     element2 = cv.getStructuringElement(cv.MORPH_RECT, (9, 7))
 
-    # 膨胀一次，让轮廓突出
-    dilation = cv.dilate(binary, element2, iterations=1)
-
-    # 腐蚀一次，去掉细节
-    erosion = cv.erode(dilation, element1, iterations=1)
-
-    # 再次膨胀，让轮廓明显一些
-    dilation2 = cv.dilate(dilation, element2, iterations=3)
+    dilation = cv.dilate(binary, element2, iterations=1)  # 膨胀一次，让轮廓突出
+    erosion = cv.erode(dilation, element1, iterations=1)  # 腐蚀一次，去掉细节
+    dilation2 = cv.dilate(erosion, element2, iterations=3)  # 再次膨胀，让轮廓明显一些
 
     # 查找轮廓
     img2, contours, hierarchy = cv.findContours(dilation2, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
@@ -96,11 +80,16 @@ for k in range(1, 8):
         img_org2 = img.copy()
         img_plate = img_org2[y1:y2, x1:x2]
 
-        cv.namedWindow('number plate' + str(k), cv.WINDOW_NORMAL)
-        cv.imshow('number plate' + str(k), img_plate)
-        cv.imwrite('number_plate' + str(k) + '.jpg', img_plate)
+        cv.imwrite("temp.jpg", img_plate)
 
-    # 带轮廓的图片
-    cv.imwrite('contours.png', img)
-cv.waitKey(0)
-cv.destroyAllWindows()
+        # 利用百度AI进行车牌的字符识别
+        APP_ID = '11474009'
+        API_KEY = '4PbKqW6ADkz6pG56hg4rxGiw'
+        SECRET_KEY = 'zqvGGVUfXrNV4CttvnXx4EwgESrG5Mdv'
+        client = AipOcr(APP_ID, API_KEY, SECRET_KEY)
+
+        with open('temp.jpg', 'rb') as fp:
+            img = fp.read()
+
+        result = client.licensePlate(img)
+        return result['words_result']['number']
