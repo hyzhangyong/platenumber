@@ -12,12 +12,12 @@ def get_plate_number(img_path):
     hsl = cv.cvtColor(img, cv.COLOR_BGR2HLS)
     mark = cv.inRange(hsl, lower_blue, upper_blue)
 
-    # 形态学变换
+    # 平滑处理
     gaussian = cv.GaussianBlur(mark, (3, 3), 0, 0, cv.BORDER_DEFAULT)  # 高斯模糊
     median = cv.medianBlur(gaussian, 5)  # 中值滤波
     ret, binary = cv.threshold(median, 170, 255, cv.THRESH_BINARY)  # 二值化
 
-    # 做膨胀与腐蚀操作
+    # 形态学变换
     element1 = cv.getStructuringElement(cv.MORPH_RECT, (9, 1))
     element2 = cv.getStructuringElement(cv.MORPH_RECT, (9, 7))
 
