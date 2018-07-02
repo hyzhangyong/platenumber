@@ -7,7 +7,7 @@ def get_plate_number(img_path):
     img = cv.imread(img_path)
 
     # 通过hsl找蓝色
-    lower_blue = np.array([0, 20, 200])
+    lower_blue = np.array([0, 20, 140])
     upper_blue = np.array([150, 150, 255])
     hsl = cv.cvtColor(img, cv.COLOR_BGR2HLS)
     mark = cv.inRange(hsl, lower_blue, upper_blue)
@@ -92,4 +92,10 @@ def get_plate_number(img_path):
             img = fp.read()
 
         result = client.licensePlate(img)
-        return result['words_result']['number']
+
+        try:
+            result = result['words_result']['number']
+        except Exception as e:
+            result = "识别失败"
+
+        return result

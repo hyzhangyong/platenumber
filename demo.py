@@ -4,14 +4,14 @@ import numpy as np
 # 读取图片
 from aip import AipOcr
 
-img_path = '1.jpg'
+img_path = 'picture/3.jpg'
 
 img = cv.imread(img_path)
 cv.namedWindow('Original image', cv.WINDOW_NORMAL)
 cv.imshow('Original image', img)
 
 # set blue thresh
-lower_blue = np.array([0, 20, 200])
+lower_blue = np.array([0, 20, 140])
 upper_blue = np.array([150, 150, 255])
 
 # 转化成灰度图
@@ -126,9 +126,9 @@ def get_file_content(filePath):
 
 # 利用百度AI进行车牌的字符识别
 def BaiduAI(filePath):
-    APP_ID = '11469861'
-    API_KEY = '2NmBChTTNG33BVixnbiZiMLR'
-    SECRET_KEY = 'l2gjFmGcxgnUUw6WIBQIGUVQkEqqnGNM'
+    APP_ID = '11474009'
+    API_KEY = '4PbKqW6ADkz6pG56hg4rxGiw'
+    SECRET_KEY = 'zqvGGVUfXrNV4CttvnXx4EwgESrG5Mdv'
     client = AipOcr(APP_ID, API_KEY, SECRET_KEY)
 
     img = get_file_content(filePath)
