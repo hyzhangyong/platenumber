@@ -4,7 +4,7 @@ import numpy as np
 # 读取图片
 from aip import AipOcr
 
-img_path = 'picture/3.jpg'
+img_path = 'picture/2.jpg'
 
 img = cv.imread(img_path)
 cv.namedWindow('Original image', cv.WINDOW_NORMAL)
@@ -79,8 +79,6 @@ for i in range(len(contours)):
 
     # 找到最小的矩形，该矩形可能有方向
     rect = cv.minAreaRect(cnt)
-    print("rect is: ")
-    print(rect)
 
     # box是四个点的坐标
     box = cv.boxPoints(rect)
@@ -92,7 +90,6 @@ for i in range(len(contours)):
 
     # 车牌正常情况下长高比在2.7-5之间
     ratio = float(width) / float(height)
-    print(ratio)
 
     if ratio > 5 or ratio < 2:
         continue
@@ -116,7 +113,7 @@ for box in region:
     img_plate = img_org2[y1:y2, x1:x2]
     cv.namedWindow('number plate', cv.WINDOW_NORMAL)
     cv.imshow('number plate', img_plate)
-    cv.imwrite('number_plate.jpg', img_plate)
+    cv.imwrite('temp/number_plate.jpg', img_plate)
 
 
 def get_file_content(filePath):
@@ -126,9 +123,9 @@ def get_file_content(filePath):
 
 # 利用百度AI进行车牌的字符识别
 def BaiduAI(filePath):
-    APP_ID = '11474009'
-    API_KEY = '4PbKqW6ADkz6pG56hg4rxGiw'
-    SECRET_KEY = 'zqvGGVUfXrNV4CttvnXx4EwgESrG5Mdv'
+    APP_ID = '11475943'
+    API_KEY = 'uQUdib1uvkw4COHYCGatAFGt'
+    SECRET_KEY = 'NhXLq7kx4K2uIxsyZN4aO6t7khcewR2z'
     client = AipOcr(APP_ID, API_KEY, SECRET_KEY)
 
     img = get_file_content(filePath)
@@ -136,8 +133,9 @@ def BaiduAI(filePath):
     return result
 
 
-result = BaiduAI("number_plate.jpg")
+result = BaiduAI("temp/number_plate.jpg")
 print(result['words_result']['number'])
+
 
 cv.waitKey(0)
 cv.destroyAllWindows()

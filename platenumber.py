@@ -80,15 +80,15 @@ def get_plate_number(img_path):
         img_org2 = img.copy()
         img_plate = img_org2[y1:y2, x1:x2]
 
-        cv.imwrite("temp.jpg", img_plate)
+        cv.imwrite("temp/temp.jpg", img_plate)
 
         # 利用百度AI进行车牌的字符识别
-        APP_ID = '11474009'
-        API_KEY = '4PbKqW6ADkz6pG56hg4rxGiw'
-        SECRET_KEY = 'zqvGGVUfXrNV4CttvnXx4EwgESrG5Mdv'
+        APP_ID = '11475943'
+        API_KEY = 'uQUdib1uvkw4COHYCGatAFGt'
+        SECRET_KEY = 'NhXLq7kx4K2uIxsyZN4aO6t7khcewR2z'
         client = AipOcr(APP_ID, API_KEY, SECRET_KEY)
 
-        with open('temp.jpg', 'rb') as fp:
+        with open('temp/temp.jpg', 'rb') as fp:
             img = fp.read()
 
         result = client.licensePlate(img)
