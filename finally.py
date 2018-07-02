@@ -1,22 +1,22 @@
-import cv2 as cv
-import numpy as np
-
-# set blue thresh
-import pytesseract
-
-lower_blue = np.array([100, 0, 0])
-upper_blue = np.array([255, 100, 100])
-
-# get a img and show
-img = cv.imread('number_plate.jpg')
-cv.imshow('Img', img)
-
-# get mask
-mask = cv.inRange(img, lower_blue, upper_blue)
-cv.imshow('Mask', mask)
-
-cv.imwrite("temp.jpg", mask)
+from aip import AipOcr
 
 
-cv.waitKey(0) & 0xFF
-cv.destroyAllWindows()
+def get_file_content(filePath):
+    with open(filePath, 'rb') as fp:
+        return fp.read()
+
+
+# 利用百度AI进行车牌的字符识别
+def BaiduAI(filePath):
+    APP_ID = '11469861'
+    API_KEY = '2NmBChTTNG33BVixnbiZiMLR'
+    SECRET_KEY = 'l2gjFmGcxgnUUw6WIBQIGUVQkEqqnGNM'
+    client = AipOcr(APP_ID, API_KEY, SECRET_KEY)
+
+    img = get_file_content(filePath)
+    result = client.licensePlate(img)
+    return result
+
+
+result = BaiduAI("number_plate2.jpg")
+print(result['words_result']['number'])
