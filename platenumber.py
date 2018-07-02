@@ -2,21 +2,25 @@ import cv2 as cv
 import numpy as np
 
 # 读取图片
-img_path = '5.jpg'
+img_path = '7.jpg'
 img = cv.imread(img_path)
+cv.namedWindow('Original image', cv.WINDOW_NORMAL)
 cv.imshow('Original image', img)
 
-# # set blue thresh
-# lower_blue = np.array([115, 0, 0])
-# upper_blue = np.array([255, 100, 100])
-#
-# # 取出蓝色的区域
-# gray = cv.inRange(img, lower_blue, upper_blue)
-# cv.imshow('Mask', gray)
+# set blue thresh
+lower_blue = np.array([115, 0, 0])
+upper_blue = np.array([255, 150, 100])
 
-# 转化成灰度图
-gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-cv.imshow('Gray image', gray)
+# 取出蓝色的区域
+gray = cv.inRange(img, lower_blue, upper_blue)
+cv.namedWindow('Mask', cv.WINDOW_NORMAL)
+cv.imshow('Mask', gray)
+
+# # 转化成灰度图
+# gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+# cv.namedWindow('Gray image', cv.WINDOW_NORMAL)
+# cv.imshow('Gray image', gray)
+
 
 # 形态学变换
 gaussian = cv.GaussianBlur(gray, (3, 3), 0, 0, cv.BORDER_DEFAULT)
@@ -46,13 +50,14 @@ dilation = cv.dilate(binary, element2, iterations=1)
 erosion = cv.erode(dilation, element1, iterations=1)
 # cv.imshow('Erosion image', erosion)
 
+
 # 再次膨胀，让轮廓明显一些
-dilation2 = cv.dilate(erosion, element2, iterations=3)
+dilation2 = cv.dilate(dilation, element2, iterations=3)
+cv.namedWindow('Dilation2 image', cv.WINDOW_NORMAL)
 cv.imshow('Dilation2 image', dilation2)
 
 # 查找轮廓
 img2, contours, hierarchy = cv.findContours(dilation2, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
-print(contours[1])
 
 region = []
 
@@ -108,6 +113,7 @@ for box in region:
 
     img_org2 = img.copy()
     img_plate = img_org2[y1:y2, x1:x2]
+    cv.namedWindow('number plate', cv.WINDOW_NORMAL)
     cv.imshow('number plate', img_plate)
     cv.imwrite('number_plate.jpg', img_plate)
 
